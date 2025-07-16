@@ -5,11 +5,11 @@ public class EmployeeApp {
 
     public static void main(String[] args) {
         EmployeeService employeeService = new EmployeeServiceImpl();
-        Employee employee = new Employee(2L, "김상헌", JobLevel.Assistant, 50000);
+        Employee employee = new Employee(1L, "김상헌", JobLevel.Assistant, 50000);
 
         employeeService.register(employee);
 
-        Employee findEmployee = employeeService.findEmployee(2L);
+        Employee findEmployee = employeeService.findEmployee(1L);
 
         System.out.println("new employee = " + employee);
         System.out.println("find employee = " + findEmployee);

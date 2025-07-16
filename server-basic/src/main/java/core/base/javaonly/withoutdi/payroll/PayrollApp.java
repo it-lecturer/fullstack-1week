@@ -11,10 +11,18 @@ public class PayrollApp {
         EmployeeService employeeService = new EmployeeServiceImpl();
         PayrollService payrollService = new PayrollServiceImpl();
 
-        Employee employee = new Employee(1L , "홍길동", JobLevel.Manager, 50000);
-        employeeService.register(employee);
+        Long testId = 2L;
+        Employee findEmployee = employeeService.findEmployee(testId);
 
-        Payroll payroll = payrollService.createPayroll(1L, "2024년 4분기 업무", employee.getSalary());
+        if (findEmployee == null) {
+            Employee employee = new Employee(2L , "홍길동", JobLevel.Manager, 100000);
+            employeeService.register(employee);
+        }
+
+        Employee employee = employeeService.findEmployee(testId);
+
+
+        Payroll payroll = payrollService.createPayroll(employee.getId(), "2024년 4분기 업무", employee.getSalary());
         System.out.println(payroll);
     }
 }
