@@ -12,7 +12,6 @@ public class JDBCEmployeeRepository implements EmployeeRepository {
         this.template = new JdbcTemplate(dataSource);
     }
 
-
     @Override
     public void save(Employee employee) {
         String sql = "INSERT INTO employee (id, name, job_level, salary) VALUES (?, ?, ?, ?)";
