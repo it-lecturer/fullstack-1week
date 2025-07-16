@@ -24,7 +24,7 @@ class PayrollServiceTest {
         dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
         employeeService = new EmployeeServiceImpl(
 //                new JDBCEmployeeRepository(dataSource)
-                new MemoryEmployeeRepository()
+                new JDBCEmployeeRepository(dataSource)
         );
         payrollService = new PayrollServiceImpl(
                 new SalaryRatioIncentivePolicy(JobLevel.Manager, 0.1),

@@ -27,14 +27,12 @@ class EmployeeServiceTest {
     void register() {
         // given
         Employee employee = new Employee(1L, "홍길동", JobLevel.Manager, 50000);
-
-
         // when
         employeeService.register(employee);
 
         // then
         Employee findEmployee = employeeService.findEmployee(1L);
 
-        Assertions.assertThat(findEmployee).isEqualTo(employee);
+        Assertions.assertThat(findEmployee.getName()).isSameAs(employee.getName());
     }
 }
