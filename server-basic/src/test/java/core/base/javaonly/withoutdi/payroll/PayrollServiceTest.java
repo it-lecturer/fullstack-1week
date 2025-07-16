@@ -16,13 +16,11 @@ class PayrollServiceTest {
     EmployeeService employeeService = new EmployeeServiceImpl();
 
     @Test
-    @DisplayName("급여 생성 테스트")
+    @DisplayName("인센티브 반영 급여 (매니저 직급 이상)")
     void createPayroll() {
-
-
         // given
         Long employeeId = 1L;
-        Employee employee = new Employee(employeeId, "홍길동", JobLevel.President);
+        Employee employee = new Employee(employeeId, "홍길동", JobLevel.Manager, 10000);
         employeeService.register(employee);
 
         Employee findEmployee = employeeService.findEmployee(employeeId);
@@ -31,9 +29,29 @@ class PayrollServiceTest {
         PayrollService payrollService = new PayrollServiceImpl();
 
         // when
-        Payroll payroll =  payrollService.createPayroll(findEmployee.getId(), "2025년 7월 급여", 50000);
+        Payroll payroll =  payrollService.createPayroll(findEmployee.getId(), "2025년 7월 급여", employee.getSalary());
 
         // then
-        Assertions.assertThat(payroll.calculateFinalSalary()).isEqualTo(51000);
+        Assertions.assertThat(payroll.calculateFinalSalary()).isEqualTo(11000);
+    }
+
+    @Test
+    @DisplayName("인센티브 반영 급여 (매니저 직급 미만 - 반영 X)")
+    void createPayrollWithoutIncentive() {
+        // given
+        Long employeeId = 100L;
+        Employee employee = new Employee(employeeId, "김사원", JobLevel.Assistant, 500);
+        employeeService.register(employee);
+
+        Employee findEmployee = employeeService.findEmployee(employeeId);
+
+
+        PayrollService payrollService = new PayrollServiceImpl();
+
+        // when
+        Payroll payroll =  payrollService.createPayroll(findEmployee.getId(), "2025년 7월 급여", employee.getSalary());
+
+        // then
+        Assertions.assertThat(payroll.calculateFinalSalary()).isEqualTo(500);
     }
 }

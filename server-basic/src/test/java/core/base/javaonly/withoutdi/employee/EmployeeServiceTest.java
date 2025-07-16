@@ -11,7 +11,7 @@ class EmployeeServiceTest {
     @DisplayName("직원 등록이 잘되는지 확인")
     void register() {
         // given
-        Employee employee = new Employee(1L, "홍길동", JobLevel.Manager);
+        Employee employee = new Employee(1L, "홍길동", JobLevel.Manager, 50000);
         EmployeeService employeeService = new EmployeeServiceImpl();
 
         // when

@@ -4,11 +4,13 @@ public class Employee {
     private Long id;
     private String name;
     private JobLevel jobLevel;
+    private int salary;
 
-    public Employee(Long id, String name, JobLevel jobLevel) {
+    public Employee(Long id, String name, JobLevel jobLevel, int salary) {
         this.id = id;
         this.name = name;
         this.jobLevel = jobLevel;
+        this.salary = salary;
     }
 
     public Long getId() {
@@ -35,12 +37,21 @@ public class Employee {
         this.jobLevel = jobLevel;
     }
 
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", jobLevel=" + jobLevel +
+                ", salary=" + salary +
                 '}';
     }
 }

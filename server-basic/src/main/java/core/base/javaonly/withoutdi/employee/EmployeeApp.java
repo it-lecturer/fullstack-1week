@@ -5,7 +5,7 @@ public class EmployeeApp {
 
     public static void main(String[] args) {
         EmployeeService employeeService = new EmployeeServiceImpl();
-        Employee employee = new Employee(2L, "김상헌", JobLevel.Assistant);
+        Employee employee = new Employee(2L, "김상헌", JobLevel.Assistant, 50000);
 
         employeeService.register(employee);
 
