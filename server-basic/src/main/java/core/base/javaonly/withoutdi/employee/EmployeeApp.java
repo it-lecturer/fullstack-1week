@@ -8,8 +8,6 @@ import javax.sql.DataSource;
 import static core.base.javaonly.connection.ConnectionConst.*;
 
 public class EmployeeApp {
-
-
     public static void main(String[] args) {
         DataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
         EmployeeService employeeService = new EmployeeServiceImpl(
