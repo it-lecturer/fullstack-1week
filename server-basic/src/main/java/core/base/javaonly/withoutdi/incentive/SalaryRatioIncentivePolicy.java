@@ -3,13 +3,13 @@ package core.base.javaonly.withoutdi.incentive;
 import core.base.javaonly.withoutdi.employee.Employee;
 import core.base.javaonly.withoutdi.employee.JobLevel;
 
-public class FixedIncentivePolicy implements IncentivePolicy {
+public class SalaryRatioIncentivePolicy implements IncentivePolicy {
     private final JobLevel jobLevel;
-    private final int fixedIncentive;
+    private final double ratio; // 0.1 = 10%
 
-    public FixedIncentivePolicy(JobLevel jobLevel, int fixedIncentive) {
+    public SalaryRatioIncentivePolicy(JobLevel jobLevel, double ratio) {
         this.jobLevel = jobLevel;
-        this.fixedIncentive = fixedIncentive;
+        this.ratio = ratio;
     }
 
     @Override
@@ -19,6 +19,9 @@ public class FixedIncentivePolicy implements IncentivePolicy {
 
     @Override
     public int calculateIncentive(Employee employee, int baseSalary) {
-        return employee.getJobLevel().ordinal() >= jobLevel.ordinal() ? fixedIncentive : 0;
+        return employee.getJobLevel().ordinal() >= jobLevel.ordinal()
+                ? (int) Math.round(baseSalary * ratio)
+                : 0;
+
     }
 }

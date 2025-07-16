@@ -11,7 +11,7 @@ public class PayrollApp {
         EmployeeService employeeService = new EmployeeServiceImpl();
         PayrollService payrollService = new PayrollServiceImpl();
 
-        Employee employee = new Employee(1L , "홍길동", JobLevel.Manager, 10000);
+        Employee employee = new Employee(1L , "홍길동", JobLevel.Manager, 50000);
         employeeService.register(employee);
 
         Payroll payroll = payrollService.createPayroll(1L, "2024년 4분기 업무", employee.getSalary());

@@ -1,6 +1,9 @@
 package core.base.javaonly.withoutdi.payroll;
 
+import java.util.UUID;
+
 public class Payroll {
+    private UUID id = UUID.randomUUID();
     private Long employeeId;
     private String task;
     private int baseSalary;
@@ -13,6 +16,45 @@ public class Payroll {
         this.bonusAmount = bonusAmount;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
+    }
+
+    public int getBaseSalary() {
+        return baseSalary;
+    }
+
+    public void setBaseSalary(int baseSalary) {
+        this.baseSalary = baseSalary;
+    }
+
+    public int getBonusAmount() {
+        return bonusAmount;
+    }
+
+    public void setBonusAmount(int bonusAmount) {
+        this.bonusAmount = bonusAmount;
+    }
 
     public int calculateFinalSalary() {
         return baseSalary + bonusAmount;
@@ -21,7 +63,8 @@ public class Payroll {
     @Override
     public String toString() {
         return "Payroll{" +
-                "employeeId=" + employeeId +
+                "id=" + id +
+                ", employeeId=" + employeeId +
                 ", task='" + task + '\'' +
                 ", baseSalary=" + baseSalary +
                 ", bonusAmount=" + bonusAmount +
