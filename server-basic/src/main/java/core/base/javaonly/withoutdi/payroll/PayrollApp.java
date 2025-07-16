@@ -1,15 +1,28 @@
 package core.base.javaonly.withoutdi.payroll;
 
 
-import core.base.javaonly.withoutdi.employee.Employee;
-import core.base.javaonly.withoutdi.employee.EmployeeService;
-import core.base.javaonly.withoutdi.employee.EmployeeServiceImpl;
-import core.base.javaonly.withoutdi.employee.JobLevel;
+import core.base.javaonly.connection.ConnectionConst;
+import core.base.javaonly.withoutdi.employee.*;
+import core.base.javaonly.withoutdi.incentive.SalaryRatioIncentivePolicy;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import javax.sql.DataSource;
+
+import static core.base.javaonly.connection.ConnectionConst.*;
 
 public class PayrollApp {
     public static void main(String[] args) {
-        EmployeeService employeeService = new EmployeeServiceImpl();
-        PayrollService payrollService = new PayrollServiceImpl();
+        DataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
+        EmployeeService employeeService = new EmployeeServiceImpl(
+//                new JDBCEmployeeRepository(dataSource)
+                new MemoryEmployeeRepository()
+        );
+        PayrollService payrollService = new PayrollServiceImpl(
+//                new JDBCPayrollRepository(dataSource)
+                new SalaryRatioIncentivePolicy(JobLevel.Manager, 0.1),
+                new JDBCEmployeeRepository(dataSource),
+                new JDBCPayrollRepository(dataSource)
+        );
 
         Long testId = 2L;
         Employee findEmployee = employeeService.findEmployee(testId);
