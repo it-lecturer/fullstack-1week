@@ -12,11 +12,14 @@ import static core.base.javaonly.connection.ConnectionConst.*;
 
 public class PayrollServiceImpl implements PayrollService {
 
+
+
+
 //    private final IncentivePolicy incentivePolicy = new FixedIncentivePolicy(JobLevel.Manager, 1000);
     private final IncentivePolicy incentivePolicy = new SalaryRatioIncentivePolicy(JobLevel.Manager, 0.1);
 
-//    private final PayrollRepository payrollRepository = new MemoryPayrollRepository();
-
+    //    private final PayrollRepository payrollRepository = new MemoryPayrollRepository();
+//    private final EmployeeRepository  employeeRepository = new MemoryEmployeeRepository();
     private final DataSource dataSource = new DriverManagerDataSource(URL, USERNAME, PASSWORD);
     private final EmployeeRepository employeeRepository = new JDBCEmployeeRepository(dataSource);
     private final PayrollRepository payrollRepository = new JDBCPayrollRepository(dataSource);
