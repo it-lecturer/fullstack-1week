@@ -1,10 +1,11 @@
 package core.base.javaonly.withdi.employee;
 
 import core.base.AppConfig;
+import core.base.JavaOnlyAppConfig;
 
 public class EmployeeApp {
     public static void main(String[] args) {
-        AppConfig appConfig = new AppConfig();
+        JavaOnlyAppConfig appConfig = new JavaOnlyAppConfig();
         EmployeeService employeeService = appConfig.employeeService();
 
         Employee employee = new Employee(1L, "김상헌", JobLevel.Assistant, 50000);

@@ -1,11 +1,12 @@
 package core.base.javaonly.withdi.payroll;
 
 import core.base.AppConfig;
+import core.base.JavaOnlyAppConfig;
 import core.base.javaonly.withdi.employee.*;
 
 public class PayrollApp {
     public static void main(String[] args) {
-        AppConfig appConfig = new AppConfig();
+        JavaOnlyAppConfig appConfig = new JavaOnlyAppConfig();
         EmployeeService employeeService = appConfig.employeeService();
         PayrollService payrollService = appConfig.payrollService();
 

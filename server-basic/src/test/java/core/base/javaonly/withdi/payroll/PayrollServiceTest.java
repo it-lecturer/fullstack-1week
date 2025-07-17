@@ -1,6 +1,7 @@
 package core.base.javaonly.withdi.payroll;
 
 import core.base.AppConfig;
+import core.base.JavaOnlyAppConfig;
 import core.base.javaonly.withdi.employee.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,7 @@ class PayrollServiceTest {
     @BeforeEach
     void beforeEach() {
 
-        AppConfig appConfig = new AppConfig();
+        JavaOnlyAppConfig appConfig = new JavaOnlyAppConfig();
 
         employeeService = appConfig.employeeService();
         payrollService = appConfig.payrollService();

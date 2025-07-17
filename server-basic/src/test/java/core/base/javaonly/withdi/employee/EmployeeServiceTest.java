@@ -1,6 +1,7 @@
 package core.base.javaonly.withdi.employee;
 
 import core.base.AppConfig;
+import core.base.JavaOnlyAppConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +12,7 @@ class EmployeeServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        AppConfig appConfig = new AppConfig();
+        JavaOnlyAppConfig appConfig = new JavaOnlyAppConfig();
         employeeService = appConfig.employeeService();
     }
 

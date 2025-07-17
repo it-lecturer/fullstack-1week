@@ -1,12 +1,12 @@
 package core.base;
 
-import core.base.spring.employee.*;
-import core.base.spring.incentive.IncentivePolicy;
-import core.base.spring.incentive.SalaryRatioIncentivePolicy;
-import core.base.spring.payroll.JDBCPayrollRepository;
-import core.base.spring.payroll.PayrollRepository;
-import core.base.spring.payroll.PayrollService;
-import core.base.spring.payroll.PayrollServiceImpl;
+import core.base.javaonly.withdi.employee.*;
+import core.base.javaonly.withdi.incentive.IncentivePolicy;
+import core.base.javaonly.withdi.incentive.SalaryRatioIncentivePolicy;
+import core.base.javaonly.withdi.payroll.JDBCPayrollRepository;
+import core.base.javaonly.withdi.payroll.PayrollRepository;
+import core.base.javaonly.withdi.payroll.PayrollService;
+import core.base.javaonly.withdi.payroll.PayrollServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 import static core.base.javaonly.connection.ConnectionConst.*;
 
 @Configuration
-public class AppConfig {
+public class JavaOnlyAppConfig {
 
     @Bean
     public DataSource dataSource() {
