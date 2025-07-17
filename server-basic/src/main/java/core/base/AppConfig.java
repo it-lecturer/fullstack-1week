@@ -17,6 +17,7 @@ import static core.base.javaonly.connection.ConnectionConst.*;
 
 @Configuration
 public class AppConfig {
+
     @Bean
     public DataSource dataSource() {
         return new DriverManagerDataSource(URL, USERNAME, PASSWORD);
