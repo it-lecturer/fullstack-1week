@@ -2,6 +2,7 @@ package sample.app.todo.domain.repository;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+import sample.app.common.exception.TodoNotFoundException;
 import sample.app.todo.domain.entity.Todo;
 
 import java.util.*;
@@ -43,13 +44,19 @@ public class MemoryTodoRepository implements TodoRepository {
     @Override
     public void deleteById(UUID id) {
         if (!store.containsKey(id)) {
-            throw new IllegalArgumentException("Todo not found with id: " + id);
+            throw new TodoNotFoundException(id.toString());
         }
         store.remove(id);
     }
 
     @Override
     public void deleteBulk(List<UUID> ids) {
-        ids.forEach(this::deleteById);
+        for (UUID id : ids) {
+            if (!store.containsKey(id)) {
+                throw new TodoNotFoundException(id.toString());
+            }
+        }
+        ids.forEach(store::remove);
+
     }
 }
