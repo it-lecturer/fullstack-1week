@@ -1,14 +1,20 @@
 package core.base.spring.payroll;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.UUID;
 
+@Repository
+@Primary
 public class JDBCPayrollRepository implements PayrollRepository {
     private final JdbcTemplate template;
 
+    @Autowired
     public JDBCPayrollRepository(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }

@@ -1,13 +1,19 @@
 package core.base.spring.employee;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 
+@Repository
+@Primary
 public class JDBCEmployeeRepository implements EmployeeRepository {
     private final JdbcTemplate template;
 
+    @Autowired
     public JDBCEmployeeRepository(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
