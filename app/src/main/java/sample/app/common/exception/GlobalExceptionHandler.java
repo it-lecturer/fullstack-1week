@@ -11,6 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -27,6 +28,7 @@ public class GlobalExceptionHandler {
      * 비즈니스 예외 처리
      */
     @ExceptionHandler(BusinessException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleBusinessException(
             BusinessException ex, HttpServletRequest request) {
         log.warn("Business exception occurred: {}", ex.getMessage());
@@ -39,6 +41,7 @@ public class GlobalExceptionHandler {
      * @Valid 검증 실패 예외 처리
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
         log.warn("Validation failed: {}", ex.getMessage());
@@ -67,6 +70,7 @@ public class GlobalExceptionHandler {
      * @ModelAttribute 바인딩 실패 예외 처리
      */
     @ExceptionHandler(BindException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleBindException(
             BindException ex, HttpServletRequest request) {
         log.warn("Binding failed: {}", ex.getMessage());
@@ -96,6 +100,7 @@ public class GlobalExceptionHandler {
      * @ValidUUID 검증 실패 예외 처리
      */
     @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(
             ConstraintViolationException ex, HttpServletRequest request) {
         log.warn("Constraint violation: {}", ex.getMessage());
@@ -124,6 +129,7 @@ public class GlobalExceptionHandler {
      * 필수 요청 파라미터 누락 예외 처리
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
             MissingServletRequestParameterException ex, HttpServletRequest request) {
         log.warn("Missing request parameter: {}", ex.getMessage());
@@ -141,6 +147,7 @@ public class GlobalExceptionHandler {
      * 메서드 파라미터 타입 불일치 예외 처리
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         log.warn("Method argument type mismatch: {}", ex.getMessage());
@@ -158,6 +165,7 @@ public class GlobalExceptionHandler {
      * HTTP 메서드 지원하지 않음 예외 처리
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         log.warn("Method not allowed: {}", ex.getMessage());
@@ -175,6 +183,7 @@ public class GlobalExceptionHandler {
      * 핸들러를 찾을 수 없음 예외 처리 (404)
      */
     @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpServletRequest request) {
         log.warn("No handler found: {}", ex.getMessage());
@@ -192,6 +201,7 @@ public class GlobalExceptionHandler {
      * JSON 파싱 실패 예외 처리
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
         log.warn("Message not readable: {}", ex.getMessage());
@@ -209,6 +219,7 @@ public class GlobalExceptionHandler {
      * IllegalArgumentException 예외 처리
      */
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException ex, HttpServletRequest request) {
         log.warn("Illegal argument: {}", ex.getMessage());
@@ -226,16 +237,39 @@ public class GlobalExceptionHandler {
      * 그 외 모든 예외 처리
      */
     @ExceptionHandler(Exception.class)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleException(
-            Exception ex, HttpServletRequest request) {
-        log.error("Unexpected error occurred", ex);
+        Exception ex, HttpServletRequest request) {
+
+        String uri = request.getRequestURI();
+
+        // Swagger 요청은 무시하여 Spring이 직접 처리하도록
+        if (isSwaggerRequest(uri)) {
+                return null;
+        }
+
+        log.error("Unhandled exception occurred", ex);
 
         ErrorResponse errorResponse = ErrorResponse.of(
                 "INTERNAL_SERVER_ERROR",
-                "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-                request.getRequestURI()
+                "서버 내부 오류가 발생했습니다.",
+                uri
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+
+
+    /**
+     * Swagger 관련 요청인지 확인
+     */
+    private boolean isSwaggerRequest(String uri) {
+        if (uri == null) return false;
+
+        return uri.startsWith("/swagger-ui") ||
+                uri.startsWith("/swagger-ui.html") ||
+                uri.startsWith("/v3/api-docs") ||
+                uri.startsWith("/swagger-resources") ||
+                uri.startsWith("/webjars");
     }
 }
