@@ -1,5 +1,4 @@
-import { todoService } from "@/api";
-import TodoView from "@/views/todo/Todo.view";
+import TodoApp from "@/views/todo/components/TodoApp/TodoApp";
 import React from "react";
 
 const TodoPage = async (props: {
@@ -7,11 +6,9 @@ const TodoPage = async (props: {
 }) => {
   const { searchParams } = props;
 
-  const { data: todoList } = await todoService.getList({});
-
   const { status } = await searchParams;
 
-  return <TodoView status={status} todos={todoList ?? []} />;
+  return <TodoApp status={status} />;
 };
 
 export default TodoPage;

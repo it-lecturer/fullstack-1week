@@ -51,11 +51,20 @@ public class TodoServiceImpl implements TodoService {
         UUID todoId = UUID.fromString(id);
 
         // 존재 여부 확인
-        if (todoRepository.findById(todoId).isEmpty()) {
-            throw new TodoNotFoundException(id);
+        Todo existingTodo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new TodoNotFoundException(id));
+
+        // title이 제공된 경우에만 업데이트
+        if (request.getTitle() != null && !request.getTitle().trim().isEmpty()) {
+            existingTodo.setTitle(request.getTitle());
         }
 
-        todoRepository.update(todoId, Todo.of(request.getTitle()));
+        // completed가 제공된 경우에만 업데이트
+        if (request.getCompleted() != null) {
+            existingTodo.setCompleted(request.getCompleted());
+        }
+
+        todoRepository.update(todoId, existingTodo);
     }
 
     @Override

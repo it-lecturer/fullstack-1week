@@ -47,7 +47,7 @@ declare namespace Todo {
       body?: Body;
     };
 
-    type Response = TodoInfo;
+    type Response = Array<TodoInfo>;
   }
 
   /**

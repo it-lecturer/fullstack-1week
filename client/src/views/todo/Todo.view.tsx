@@ -1,13 +1,14 @@
 import React from "react";
-import TodoApp from "./components/TodoApp/TodoApp";
+import ServerTodo from "./components/ServerTodo/ServerTodo";
 
 type TodoViewProps = {
   status?: "all" | "completed" | "active";
+  todos?: Todo.GetList.Response;
 };
 
 const TodoView = (props: TodoViewProps) => {
-  const { status = "all" } = props;
-  return <TodoApp status={status} />;
+  const { status = "all", todos } = props;
+  return <ServerTodo todos={todos} status={status} />;
 };
 
 export default TodoView;
