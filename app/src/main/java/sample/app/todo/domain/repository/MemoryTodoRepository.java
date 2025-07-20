@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import sample.app.common.exception.TodoNotFoundException;
 import sample.app.todo.domain.entity.Todo;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
