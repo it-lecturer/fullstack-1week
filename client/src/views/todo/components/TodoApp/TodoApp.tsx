@@ -21,8 +21,6 @@ const TodoApp = (props: TodoAppProps) => {
   const { status = "all" } = props;
   const [todos, setTodos] = React.useState<Array<ITodo>>([]);
 
-  // const [viewStatus, setViewStatus] = React.useState('all' | 'completed' | 'active')
-
   const addTodo = React.useCallback((title: string) => {
     setTodos((prev) => {
       return [

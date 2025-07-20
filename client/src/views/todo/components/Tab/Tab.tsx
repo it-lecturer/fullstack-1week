@@ -7,7 +7,7 @@ const cx = cn.bind(styles);
 type TabItem = {
   id: string;
   title: string;
-  onClick?: (...args: any) => void;
+  onClick?: (...args: never[]) => void;
 };
 
 type TabProps = {
