@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 import sample.app.common.exception.TodoNotFoundException;
 import sample.app.todo.domain.entity.Todo;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Repository
@@ -34,6 +38,8 @@ public class MemoryTodoRepository implements TodoRepository {
             // 기존 Todo의 ID를 유지하면서 내용만 업데이트
             Todo existingTodo = store.get(id);
             existingTodo.setTitle(todo.getTitle());
+            existingTodo.setCompleted(todo.isCompleted());
+            existingTodo.setUpdatedAt(ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
             store.put(id, existingTodo);
         } else {
             throw new IllegalArgumentException("Todo not found with id: " + id);

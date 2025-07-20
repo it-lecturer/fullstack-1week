@@ -10,5 +10,4 @@ public class TodoListResponse {
 
     private String title;
 
-
 }
