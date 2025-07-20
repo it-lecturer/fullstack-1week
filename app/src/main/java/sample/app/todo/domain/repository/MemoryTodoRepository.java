@@ -41,7 +41,7 @@ public class MemoryTodoRepository implements TodoRepository {
             existingTodo.setUpdatedAt(ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
             store.put(id, existingTodo);
         } else {
-            throw new IllegalArgumentException("Todo not found with id: " + id);
+            throw new TodoNotFoundException(id.toString());
         }
     }
 

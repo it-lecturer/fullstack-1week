@@ -1,6 +1,7 @@
 package sample.app.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,6 +85,33 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(
                 "BINDING_FAILED",
                 "요청 데이터 바인딩에 실패했습니다.",
+                request.getRequestURI(),
+                validationErrors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    /**
+     * @ValidUUID 검증 실패 예외 처리
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+            ConstraintViolationException ex, HttpServletRequest request) {
+        log.warn("Constraint violation: {}", ex.getMessage());
+
+        List<ErrorResponse.ValidationError> validationErrors = ex.getConstraintViolations()
+                .stream()
+                .map(violation -> ErrorResponse.ValidationError.builder()
+                        .field(violation.getPropertyPath().toString())
+                        .rejectedValue(violation.getInvalidValue())
+                        .message(violation.getMessage())
+                        .build())
+                .collect(Collectors.toList());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                "CONSTRAINT_VIOLATION",
+                "입력 데이터 검증에 실패했습니다.",
                 request.getRequestURI(),
                 validationErrors
         );
