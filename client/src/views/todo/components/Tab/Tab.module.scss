@@ -1,0 +1,14 @@
+.Wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.TabItem {
+  border: 1px solid #e6e6e6;
+  height: 32px;
+  padding: 0 8px;
+  &.active {
+    border-color: var(--color-primary);
+  }
+}

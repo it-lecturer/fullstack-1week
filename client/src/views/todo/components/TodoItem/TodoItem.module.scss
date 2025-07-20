@@ -1,0 +1,51 @@
+.Wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 12px;
+
+  &:hover {
+    .TrashIcon {
+      display: block;
+    }
+  }
+}
+
+.CheckBox {
+  border: 1px solid #ededed;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  &.completed {
+    border-color: var(--color-primary);
+  }
+}
+
+.TodoTitle {
+  flex: 1 auto;
+  outline: none;
+
+  &.completed {
+    text-decoration: line-through;
+    color: #949494;
+  }
+}
+
+.TrashIcon {
+  display: none;
+}
+
+.TrashButton {
+  &:hover {
+    svg {
+      // stroke: var(--color-primary);
+      fill: var(--color-primary);
+    }
+  }
+}

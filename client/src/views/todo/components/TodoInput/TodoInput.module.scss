@@ -1,0 +1,25 @@
+.Wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 64px;
+  border: 2px solid transparent;
+
+  &.focused {
+    border-color: var(--color-primary);
+  }
+}
+
+.Input {
+  flex: 1 auto;
+  padding: 0 16px;
+  overflow: hidden;
+  min-width: none;
+  text-overflow: ellipsis;
+  outline: none;
+
+  &:focus {
+  }
+}
+
+.TodoInputButton {
+}
