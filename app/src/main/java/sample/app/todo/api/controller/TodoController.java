@@ -3,6 +3,7 @@ package sample.app.todo.api.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import sample.app.common.validation.ValidUUID;
 import sample.app.todo.api.dto.request.create.CreateTodoBody;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
+@Validated
 public class TodoController {
 
     private final TodoService todoService;
