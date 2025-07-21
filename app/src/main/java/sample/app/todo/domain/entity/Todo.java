@@ -23,7 +23,7 @@ public class Todo {
     private UUID id;
 
     @Setter
-    @Column(name = "title")
+    @Column(name = "title", length = 1000)
     private String title;
 
     @Setter

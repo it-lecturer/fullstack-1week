@@ -15,7 +15,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+//@Primary
 public interface SpringDataJpaTodoRepository extends JpaRepository<Todo, UUID>, TodoRepository {
+
+    
     @Override
     @Transactional
     default void deleteBulk(List<UUID> ids) {
@@ -28,5 +31,11 @@ public interface SpringDataJpaTodoRepository extends JpaRepository<Todo, UUID>, 
 
         // 일괄 삭제
         deleteAllById(ids);
+    }
+    
+    @Override
+    @Transactional
+    default void clear() {
+        deleteAll();
     }
 }

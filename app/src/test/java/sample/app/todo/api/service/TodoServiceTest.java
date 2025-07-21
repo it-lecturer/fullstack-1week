@@ -14,8 +14,8 @@ import sample.app.todo.api.dto.request.create.CreateTodoBody;
 import sample.app.todo.api.dto.request.delete.DeleteBulkTodoBody;
 import sample.app.todo.api.dto.request.update.UpdateTodoBody;
 import sample.app.todo.api.dto.response.TodoResponse;
-import sample.app.todo.domain.repository.MemoryTodoRepository;
 import sample.app.todo.domain.repository.TodoRepository;
+import sample.app.todo.domain.repository.MemoryTodoRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("TodoService 테스트")
 class TodoServiceTest {
     @Autowired
-    private MemoryTodoRepository todoRepository;
+    private TodoRepository todoRepository;
     @Autowired
     private TodoService todoService;
 
     static class TestConfig {
         @Bean
-        public MemoryTodoRepository todoRepository() {
+        public TodoRepository todoRepository() {
             return new MemoryTodoRepository();
         }
 
