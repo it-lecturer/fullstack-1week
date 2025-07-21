@@ -1,5 +1,6 @@
 package sample.app.todo.domain.repository;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import sample.app.common.exception.TodoNotFoundException;
@@ -17,6 +18,16 @@ public class MemoryTodoRepository implements TodoRepository {
 
     @Override
     public Todo save(Todo todo) {
+        if (store.containsKey(todo.getId())) {
+            Todo existingTodo = store.get(todo.getId());
+            existingTodo.setTitle(todo.getTitle());
+            existingTodo.setCompleted(todo.isCompleted());
+            existingTodo.setUpdatedAt(ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            store.put(todo.getId(), existingTodo);
+
+            return todo;
+        }
+
         store.put(todo.getId(), todo);
         return todo;
     }
@@ -31,20 +42,6 @@ public class MemoryTodoRepository implements TodoRepository {
         return Optional.ofNullable(store.get(id));
     }
 
-    @Override
-    public void update(UUID id, Todo todo) {
-        if (store.containsKey(id)) {
-            // 기존 Todo의 ID를 유지하면서 내용만 업데이트
-            Todo existingTodo = store.get(id);
-            existingTodo.setTitle(todo.getTitle());
-            existingTodo.setCompleted(todo.isCompleted());
-            existingTodo.setUpdatedAt(ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
-            store.put(id, existingTodo);
-        } else {
-            throw new TodoNotFoundException(id.toString());
-        }
-    }
-
 
     @Override
     public void deleteById(UUID id) {
@@ -54,7 +51,7 @@ public class MemoryTodoRepository implements TodoRepository {
         store.remove(id);
     }
 
-    @Override
+
     public void deleteBulk(List<UUID> ids) {
         for (UUID id : ids) {
             if (!store.containsKey(id)) {
@@ -73,5 +70,4 @@ public class MemoryTodoRepository implements TodoRepository {
     public int size() {
         return store.size();
     }
-
 }

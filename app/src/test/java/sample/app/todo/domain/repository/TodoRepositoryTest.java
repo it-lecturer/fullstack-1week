@@ -270,76 +270,77 @@ class TodoRepositoryTest {
     }
 
     @Nested
-    @DisplayName("update() 테스트")
+    @DisplayName("save()로 업데이트 테스트")  // update() -> save()로 변경
     class UpdateTest {
 
         @Test
-        @DisplayName("존재하는 할일 업데이트 성공")
+        @DisplayName("기존 할일 업데이트 성공")
         @Transactional
-        void update_Success() throws InterruptedException {
+        void save_UpdateExisting() throws InterruptedException {
             // Given
             Todo saved = repository.save(testTodo1);
             String originalCreatedAt = saved.getCreatedAt();
             String originalUpdatedAt = saved.getUpdatedAt();
+            UUID originalId = saved.getId();
 
             // 시간 차이를 위해 잠시 대기
             Thread.sleep(100);
 
-            Todo updateTodo = Todo.of("업데이트된 제목");
-            updateTodo.setCompleted(true);
+            // 기존 Todo 수정 (같은 ID를 가진 Todo로 업데이트)
+            saved.setTitle("업데이트된 제목");
+            saved.setCompleted(true);
 
             // When
-            repository.update(saved.getId(), updateTodo);
+            Todo updated = repository.save(saved);  // save()로 업데이트
 
             // Then
-            Optional<Todo> updated = repository.findById(saved.getId());
-            assertTrue(updated.isPresent());
+            assertEquals(originalId, updated.getId()); // ID는 그대로
+            assertEquals("업데이트된 제목", updated.getTitle()); // 제목 변경
+            assertTrue(updated.isCompleted()); // 완료 상태 변경
+            assertEquals(originalCreatedAt, updated.getCreatedAt()); // 생성일은 그대로
+            assertNotEquals(originalUpdatedAt, updated.getUpdatedAt()); // 수정일은 변경
 
-            Todo updatedTodo = updated.get();
-            assertEquals(saved.getId(), updatedTodo.getId()); // ID는 그대로
-            assertEquals("업데이트된 제목", updatedTodo.getTitle()); // 제목 변경
-            assertTrue(updatedTodo.isCompleted()); // 완료 상태 변경
-            assertEquals(originalCreatedAt, updatedTodo.getCreatedAt()); // 생성일은 그대로
-            assertNotEquals(originalUpdatedAt, updatedTodo.getUpdatedAt()); // 수정일은 변경
+            // 데이터베이스에서도 확인
+            Optional<Todo> foundTodo = repository.findById(originalId);
+            assertTrue(foundTodo.isPresent());
+            assertEquals("업데이트된 제목", foundTodo.get().getTitle());
+            assertTrue(foundTodo.get().isCompleted());
         }
 
         @Test
-        @DisplayName("존재하지 않는 할일 업데이트 시 예외 발생")
-        void update_NotExists() {
+        @DisplayName("존재하지 않는 ID로 새로운 할일 생성")
+        void save_CreateNew() {
             // Given
-            UUID nonExistentId = UUID.randomUUID();
-            Todo updateTodo = Todo.of("업데이트 시도");
+            Todo newTodo = Todo.of("새로운 할일");
+            
+            // When
+            Todo saved = repository.save(newTodo);
 
-            // When & Then
-            TodoNotFoundException exception = assertThrows(
-                    TodoNotFoundException.class,
-                    () -> repository.update(nonExistentId, updateTodo)
-            );
-
-            assertNotNull(exception.getMessage());
+            // Then
+            assertNotNull(saved.getId());
+            assertEquals("새로운 할일", saved.getTitle());
+            assertFalse(saved.isCompleted());
+            assertEquals(1, getRepositorySize());
         }
 
         @Test
         @DisplayName("부분 업데이트 검증")
         @Transactional
-        void update_PartialUpdate() {
+        void save_PartialUpdate() {
             // Given
             testTodo1.setCompleted(true);
             Todo saved = repository.save(testTodo1);
 
-            Todo updateTodo = Todo.of("제목 변경");
-            updateTodo.setCompleted(false);
+            // 기존 Todo 수정
+            saved.setTitle("제목 변경");
+            saved.setCompleted(false);
 
             // When
-            repository.update(saved.getId(), updateTodo);
+            Todo updated = repository.save(saved);
 
             // Then
-            Optional<Todo> updated = repository.findById(saved.getId());
-            assertTrue(updated.isPresent());
-
-            Todo updatedTodo = updated.get();
-            assertEquals("제목 변경", updatedTodo.getTitle());
-            assertFalse(updatedTodo.isCompleted());
+            assertEquals("제목 변경", updated.getTitle());
+            assertFalse(updated.isCompleted());
         }
     }
 
@@ -561,12 +562,11 @@ class TodoRepositoryTest {
             assertEquals(3, all.size());
             assertTrue(repository.findById(saved2.getId()).isPresent());
 
-            // 4. 업데이트 테스트
-            Todo updateTodo = Todo.of("업데이트된 할일");
-            updateTodo.setCompleted(true);
-            repository.update(saved1.getId(), updateTodo);
+            // 4. 업데이트 테스트 (save로 업데이트)
+            saved1.setTitle("업데이트된 할일");
+            saved1.setCompleted(true);
+            Todo updated = repository.save(saved1);  // save()로 업데이트
 
-            Todo updated = repository.findById(saved1.getId()).get();
             assertEquals("업데이트된 할일", updated.getTitle());
             assertTrue(updated.isCompleted());
 

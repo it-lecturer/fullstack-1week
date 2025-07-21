@@ -1,7 +1,10 @@
 package sample.app.todo.domain.entity;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import sample.app.common.annotation.UUIDv7;
 import sample.app.todo.api.dto.request.create.CreateTodoBody;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -13,18 +16,18 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
+
 public class Todo {
     @Id
     @Column(name = "todo_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
-    @Column(name = "title")
     @Setter
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "completed")
     @Setter
+    @Column(name = "completed")
     private boolean completed;
 
     private String createdAt = ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
@@ -39,6 +42,7 @@ public class Todo {
 
 
     private Todo(String title) {
+        this.id = UuidCreator.getTimeOrderedEpoch();
         this.title = title;
     }
 

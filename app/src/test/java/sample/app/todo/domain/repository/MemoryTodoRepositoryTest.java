@@ -1,3 +1,4 @@
+
 package sample.app.todo.domain.repository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("MemoryTodoRepository 테스트")
 class MemoryTodoRepositoryTest {
 
-    private MemoryTodoRepository repository;
+    private MemoryTodoRepository repository;  // MemoryTodoRepository로 타입 변경
     private Todo testTodo1;
     private Todo testTodo2;
     private Todo testTodo3;
@@ -30,7 +31,6 @@ class MemoryTodoRepositoryTest {
         testTodo3 = Todo.of("세 번째 할일");
     }
 
-
     @Nested
     @DisplayName("save() 테스트")
     class SaveTest {
@@ -43,7 +43,7 @@ class MemoryTodoRepositoryTest {
 
             // Then
             assertNotNull(saved);
-            assertEquals(testTodo1.getId(), saved.getId());
+            assertNotNull(saved.getId());  // ID가 자동 생성됨
             assertEquals(testTodo1.getTitle(), saved.getTitle());
             assertEquals(testTodo1.isCompleted(), saved.isCompleted());
             assertEquals(1, repository.size());
@@ -53,32 +53,37 @@ class MemoryTodoRepositoryTest {
         @DisplayName("여러 개의 할일 저장")
         void save_Multiple() {
             // When
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
 
             // Then
             assertEquals(3, repository.size());
 
             // 모든 Todo가 저장되었는지 확인
-            assertTrue(repository.findById(testTodo1.getId()).isPresent());
-            assertTrue(repository.findById(testTodo2.getId()).isPresent());
-            assertTrue(repository.findById(testTodo3.getId()).isPresent());
+            assertTrue(repository.findById(saved1.getId()).isPresent());
+            assertTrue(repository.findById(saved2.getId()).isPresent());
+            assertTrue(repository.findById(saved3.getId()).isPresent());
         }
 
         @Test
-        @DisplayName("동일한 ID로 재저장 시 덮어쓰기")
-        void save_OverwriteExisting() {
+        @DisplayName("동일한 ID로 재저장 시 업데이트")
+        void save_UpdateExisting() {
             // Given
-            repository.save(testTodo1);
+            Todo saved = repository.save(testTodo1);
             assertEquals(1, repository.size());
+            UUID originalId = saved.getId();
 
-            // When - 같은 Todo를 다시 저장 (덮어쓰기)
-            Todo updatedTodo = repository.save(testTodo1);
+            // When - 같은 ID를 가진 Todo를 수정 후 재저장
+            saved.setTitle("수정된 제목");
+            saved.setCompleted(true);
+            Todo updated = repository.save(saved);
 
             // Then
             assertEquals(1, repository.size()); // 사이즈는 그대로
-            assertEquals(testTodo1.getId(), updatedTodo.getId());
+            assertEquals(originalId, updated.getId()); // ID는 그대로
+            assertEquals("수정된 제목", updated.getTitle()); // 제목 변경됨
+            assertTrue(updated.isCompleted()); // 완료 상태 변경됨
         }
 
         @Test
@@ -88,7 +93,6 @@ class MemoryTodoRepositoryTest {
             assertThrows(NullPointerException.class, () -> repository.save(null));
         }
     }
-
 
     @Nested
     @DisplayName("findAll() 테스트")
@@ -110,9 +114,9 @@ class MemoryTodoRepositoryTest {
         @DisplayName("저장된 모든 할일 조회")
         void findAll_WithData() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
 
             // When
             List<Todo> todos = repository.findAll();
@@ -124,9 +128,9 @@ class MemoryTodoRepositoryTest {
             Set<UUID> foundIds = new HashSet<>();
             todos.forEach(todo -> foundIds.add(todo.getId()));
 
-            assertTrue(foundIds.contains(testTodo1.getId()));
-            assertTrue(foundIds.contains(testTodo2.getId()));
-            assertTrue(foundIds.contains(testTodo3.getId()));
+            assertTrue(foundIds.contains(saved1.getId()));
+            assertTrue(foundIds.contains(saved2.getId()));
+            assertTrue(foundIds.contains(saved3.getId()));
         }
 
         @Test
@@ -160,16 +164,16 @@ class MemoryTodoRepositoryTest {
         @DisplayName("존재하는 ID로 조회 성공")
         void findById_Exists() {
             // Given
-            repository.save(testTodo1);
+            Todo saved = repository.save(testTodo1);
 
             // When
-            Optional<Todo> found = repository.findById(testTodo1.getId());
+            Optional<Todo> found = repository.findById(saved.getId());
 
             // Then
             assertTrue(found.isPresent());
-            assertEquals(testTodo1.getId(), found.get().getId());
-            assertEquals(testTodo1.getTitle(), found.get().getTitle());
-            assertEquals(testTodo1.isCompleted(), found.get().isCompleted());
+            assertEquals(saved.getId(), found.get().getId());
+            assertEquals(saved.getTitle(), found.get().getTitle());
+            assertEquals(saved.isCompleted(), found.get().isCompleted());
         }
 
         @Test
@@ -200,47 +204,49 @@ class MemoryTodoRepositoryTest {
         @DisplayName("여러 Todo 중 특정 ID로 조회")
         void findById_MultipleData() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
 
             // When
-            Optional<Todo> found = repository.findById(testTodo2.getId());
+            Optional<Todo> found = repository.findById(saved2.getId());
 
             // Then
             assertTrue(found.isPresent());
-            assertEquals(testTodo2.getId(), found.get().getId());
-            assertEquals(testTodo2.getTitle(), found.get().getTitle());
+            assertEquals(saved2.getId(), found.get().getId());
+            assertEquals(saved2.getTitle(), found.get().getTitle());
         }
     }
 
     @Nested
-    @DisplayName("update() 테스트")
+    @DisplayName("save()로 업데이트 테스트")  // update() -> save()로 변경
     class UpdateTest {
 
         @Test
         @DisplayName("존재하는 할일 업데이트 성공")
-        void update_Success() throws InterruptedException {
+        void save_UpdateExisting() throws InterruptedException {
             // Given
-            repository.save(testTodo1);
-            String originalCreatedAt = testTodo1.getCreatedAt();
-            String originalUpdatedAt = testTodo1.getUpdatedAt();
+            Todo saved = repository.save(testTodo1);
+            String originalCreatedAt = saved.getCreatedAt();
+            String originalUpdatedAt = saved.getUpdatedAt();
+            UUID originalId = saved.getId();
 
             // 시간 차이를 위해 잠시 대기
             Thread.sleep(10);
 
-            Todo updateTodo = Todo.of("업데이트된 제목");
-            updateTodo.setCompleted(true);
+            // 기존 Todo 수정
+            saved.setTitle("업데이트된 제목");
+            saved.setCompleted(true);
 
             // When
-            repository.update(testTodo1.getId(), updateTodo);
+            Todo updated = repository.save(saved);  // save()로 업데이트
 
             // Then
-            Optional<Todo> updated = repository.findById(testTodo1.getId());
-            assertTrue(updated.isPresent());
+            Optional<Todo> foundTodo = repository.findById(originalId);
+            assertTrue(foundTodo.isPresent());
 
-            Todo updatedTodo = updated.get();
-            assertEquals(testTodo1.getId(), updatedTodo.getId()); // ID는 그대로
+            Todo updatedTodo = foundTodo.get();
+            assertEquals(originalId, updatedTodo.getId()); // ID는 그대로
             assertEquals("업데이트된 제목", updatedTodo.getTitle()); // 제목 변경
             assertTrue(updatedTodo.isCompleted()); // 완료 상태 변경
             assertEquals(originalCreatedAt, updatedTodo.getCreatedAt()); // 생성일은 그대로
@@ -248,36 +254,37 @@ class MemoryTodoRepositoryTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 할일 업데이트 시 예외 발생")
-        void update_NotExists() {
+        @DisplayName("존재하지 않는 ID로 새로운 할일 생성")
+        void save_CreateNew() {
             // Given
-            UUID nonExistentId = UUID.randomUUID();
-            Todo updateTodo = Todo.of("업데이트 시도");
+            Todo newTodo = Todo.of("새로운 할일");
 
-            // When & Then
-            TodoNotFoundException exception = assertThrows(
-                    TodoNotFoundException.class,
-                    () -> repository.update(nonExistentId, updateTodo)
-            );
+            // When
+            Todo saved = repository.save(newTodo);
 
-            assertNotNull(exception.getMessage());
+            // Then
+            assertNotNull(saved.getId());
+            assertEquals("새로운 할일", saved.getTitle());
+            assertFalse(saved.isCompleted());
+            assertEquals(1, repository.size());
         }
 
         @Test
-        @DisplayName("부분 업데이트 - 제목만 변경")
-        void update_TitleOnly() {
+        @DisplayName("부분 업데이트 - 제목과 완료 상태 변경")
+        void save_PartialUpdate() {
             // Given
             testTodo1.setCompleted(true); // 초기값 설정
-            repository.save(testTodo1);
+            Todo saved = repository.save(testTodo1);
 
-            Todo updateTodo = Todo.of("제목만 변경");
-            updateTodo.setCompleted(false); // 다른 값으로 설정
+            // 기존 Todo 수정
+            saved.setTitle("제목만 변경");
+            saved.setCompleted(false); // 다른 값으로 설정
 
             // When
-            repository.update(testTodo1.getId(), updateTodo);
+            repository.save(saved);  // save()로 업데이트
 
             // Then
-            Optional<Todo> updated = repository.findById(testTodo1.getId());
+            Optional<Todo> updated = repository.findById(saved.getId());
             assertTrue(updated.isPresent());
 
             Todo updatedTodo = updated.get();
@@ -294,17 +301,17 @@ class MemoryTodoRepositoryTest {
         @DisplayName("존재하는 할일 삭제 성공")
         void deleteById_Success() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
             assertEquals(2, repository.size());
 
             // When
-            repository.deleteById(testTodo1.getId());
+            repository.deleteById(saved1.getId());
 
             // Then
             assertEquals(1, repository.size());
-            assertFalse(repository.findById(testTodo1.getId()).isPresent());
-            assertTrue(repository.findById(testTodo2.getId()).isPresent());
+            assertFalse(repository.findById(saved1.getId()).isPresent());
+            assertTrue(repository.findById(saved2.getId()).isPresent());
         }
 
         @Test
@@ -326,11 +333,11 @@ class MemoryTodoRepositoryTest {
         @DisplayName("마지막 할일 삭제 후 빈 저장소")
         void deleteById_LastItem() {
             // Given
-            repository.save(testTodo1);
+            Todo saved = repository.save(testTodo1);
             assertEquals(1, repository.size());
 
             // When
-            repository.deleteById(testTodo1.getId());
+            repository.deleteById(saved.getId());
 
             // Then
             assertEquals(0, repository.size());
@@ -341,15 +348,15 @@ class MemoryTodoRepositoryTest {
         @DisplayName("동일한 ID 중복 삭제 시 예외 발생")
         void deleteById_DuplicateDelete() {
             // Given
-            repository.save(testTodo1);
+            Todo saved = repository.save(testTodo1);
 
             // When
-            repository.deleteById(testTodo1.getId());
+            repository.deleteById(saved.getId());
 
             // Then
             assertThrows(
                     TodoNotFoundException.class,
-                    () -> repository.deleteById(testTodo1.getId())
+                    () -> repository.deleteById(saved.getId())
             );
         }
     }
@@ -362,32 +369,32 @@ class MemoryTodoRepositoryTest {
         @DisplayName("여러 할일 일괄 삭제 성공")
         void deleteBulk_Success() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
             assertEquals(3, repository.size());
 
-            List<UUID> idsToDelete = Arrays.asList(testTodo1.getId(), testTodo3.getId());
+            List<UUID> idsToDelete = Arrays.asList(saved1.getId(), saved3.getId());
 
             // When
             repository.deleteBulk(idsToDelete);
 
             // Then
             assertEquals(1, repository.size());
-            assertFalse(repository.findById(testTodo1.getId()).isPresent());
-            assertTrue(repository.findById(testTodo2.getId()).isPresent());
-            assertFalse(repository.findById(testTodo3.getId()).isPresent());
+            assertFalse(repository.findById(saved1.getId()).isPresent());
+            assertTrue(repository.findById(saved2.getId()).isPresent());
+            assertFalse(repository.findById(saved3.getId()).isPresent());
         }
 
         @Test
         @DisplayName("존재하지 않는 ID 포함 시 예외 발생")
         void deleteBulk_NonExistentId() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
 
             UUID nonExistentId = UUID.randomUUID();
-            List<UUID> idsToDelete = Arrays.asList(testTodo1.getId(), nonExistentId, testTodo2.getId());
+            List<UUID> idsToDelete = Arrays.asList(saved1.getId(), nonExistentId, saved2.getId());
 
             // When & Then
             TodoNotFoundException exception = assertThrows(
@@ -397,8 +404,8 @@ class MemoryTodoRepositoryTest {
 
             // 예외 발생 시 아무것도 삭제되지 않음 (트랜잭션 개념)
             assertEquals(2, repository.size());
-            assertTrue(repository.findById(testTodo1.getId()).isPresent());
-            assertTrue(repository.findById(testTodo2.getId()).isPresent());
+            assertTrue(repository.findById(saved1.getId()).isPresent());
+            assertTrue(repository.findById(saved2.getId()).isPresent());
         }
 
         @Test
@@ -422,11 +429,11 @@ class MemoryTodoRepositoryTest {
         @DisplayName("전체 할일 일괄 삭제")
         void deleteBulk_All() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
 
-            List<UUID> allIds = Arrays.asList(testTodo1.getId(), testTodo2.getId(), testTodo3.getId());
+            List<UUID> allIds = Arrays.asList(saved1.getId(), saved2.getId(), saved3.getId());
 
             // When
             repository.deleteBulk(allIds);
@@ -440,13 +447,13 @@ class MemoryTodoRepositoryTest {
         @DisplayName("중복된 ID가 포함된 일괄 삭제")
         void deleteBulk_DuplicateIds() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
 
             List<UUID> idsWithDuplicates = Arrays.asList(
-                    testTodo1.getId(),
-                    testTodo2.getId(),
-                    testTodo1.getId() // 중복
+                    saved1.getId(),
+                    saved2.getId(),
+                    saved1.getId() // 중복
             );
 
             // When
@@ -465,9 +472,9 @@ class MemoryTodoRepositoryTest {
         @DisplayName("저장소 전체 초기화")
         void clear_Success() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
             assertEquals(3, repository.size());
 
             // When
@@ -476,9 +483,9 @@ class MemoryTodoRepositoryTest {
             // Then
             assertEquals(0, repository.size());
             assertTrue(repository.findAll().isEmpty());
-            assertFalse(repository.findById(testTodo1.getId()).isPresent());
-            assertFalse(repository.findById(testTodo2.getId()).isPresent());
-            assertFalse(repository.findById(testTodo3.getId()).isPresent());
+            assertFalse(repository.findById(saved1.getId()).isPresent());
+            assertFalse(repository.findById(saved2.getId()).isPresent());
+            assertFalse(repository.findById(saved3.getId()).isPresent());
         }
 
         @Test
@@ -499,16 +506,16 @@ class MemoryTodoRepositoryTest {
         @DisplayName("clear() 후 새로운 데이터 저장")
         void clear_ThenSaveNew() {
             // Given
-            repository.save(testTodo1);
+            Todo saved1 = repository.save(testTodo1);
             repository.clear();
 
             // When
-            repository.save(testTodo2);
+            Todo saved2 = repository.save(testTodo2);
 
             // Then
             assertEquals(1, repository.size());
-            assertFalse(repository.findById(testTodo1.getId()).isPresent());
-            assertTrue(repository.findById(testTodo2.getId()).isPresent());
+            assertFalse(repository.findById(saved1.getId()).isPresent());
+            assertTrue(repository.findById(saved2.getId()).isPresent());
         }
     }
 
@@ -543,16 +550,16 @@ class MemoryTodoRepositoryTest {
         @DisplayName("데이터 삭제에 따른 크기 변화")
         void size_DeleteData() {
             // Given
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
             assertEquals(3, repository.size());
 
             // When & Then
-            repository.deleteById(testTodo1.getId());
+            repository.deleteById(saved1.getId());
             assertEquals(2, repository.size());
 
-            repository.deleteBulk(Arrays.asList(testTodo2.getId(), testTodo3.getId()));
+            repository.deleteBulk(Arrays.asList(saved2.getId(), saved3.getId()));
             assertEquals(0, repository.size());
         }
 
@@ -560,11 +567,12 @@ class MemoryTodoRepositoryTest {
         @DisplayName("동일한 ID 재저장 시 크기 유지")
         void size_OverwriteSame() {
             // Given
-            repository.save(testTodo1);
+            Todo saved = repository.save(testTodo1);
             assertEquals(1, repository.size());
 
-            // When - 동일한 Todo 재저장
-            repository.save(testTodo1);
+            // When - 동일한 Todo 재저장 (업데이트)
+            saved.setTitle("수정된 제목");
+            repository.save(saved);
 
             // Then
             assertEquals(1, repository.size()); // 크기 변화 없음
@@ -583,32 +591,32 @@ class MemoryTodoRepositoryTest {
             assertTrue(repository.findAll().isEmpty());
 
             // 2. 데이터 저장
-            repository.save(testTodo1);
-            repository.save(testTodo2);
-            repository.save(testTodo3);
+            Todo saved1 = repository.save(testTodo1);
+            Todo saved2 = repository.save(testTodo2);
+            Todo saved3 = repository.save(testTodo3);
             assertEquals(3, repository.size());
 
             // 3. 조회 테스트
             List<Todo> all = repository.findAll();
             assertEquals(3, all.size());
-            assertTrue(repository.findById(testTodo2.getId()).isPresent());
+            assertTrue(repository.findById(saved2.getId()).isPresent());
 
-            // 4. 업데이트 테스트
-            Todo updateTodo = Todo.of("업데이트된 할일");
-            updateTodo.setCompleted(true);
-            repository.update(testTodo1.getId(), updateTodo);
+            // 4. 업데이트 테스트 (save로 업데이트)
+            saved1.setTitle("업데이트된 할일");
+            saved1.setCompleted(true);
+            repository.save(saved1);  // save()로 업데이트
 
-            Todo updated = repository.findById(testTodo1.getId()).get();
+            Todo updated = repository.findById(saved1.getId()).get();
             assertEquals("업데이트된 할일", updated.getTitle());
             assertTrue(updated.isCompleted());
 
             // 5. 개별 삭제
-            repository.deleteById(testTodo2.getId());
+            repository.deleteById(saved2.getId());
             assertEquals(2, repository.size());
-            assertFalse(repository.findById(testTodo2.getId()).isPresent());
+            assertFalse(repository.findById(saved2.getId()).isPresent());
 
             // 6. 일괄 삭제
-            repository.deleteBulk(Arrays.asList(testTodo1.getId(), testTodo3.getId()));
+            repository.deleteBulk(Arrays.asList(saved1.getId(), saved3.getId()));
             assertEquals(0, repository.size());
 
             // 7. 최종 상태 확인
@@ -626,13 +634,13 @@ class MemoryTodoRepositoryTest {
 
             for (int i = 0; i < count; i++) {
                 Todo todo = Todo.of("대량 테스트 " + i);
-                todos.add(todo);
-                repository.save(todo);
+                Todo saved = repository.save(todo);
+                todos.add(saved);
 
                 if (i % 2 == 0) {
-                    evenIds.add(todo.getId());
+                    evenIds.add(saved.getId());
                 } else {
-                    oddIds.add(todo.getId());
+                    oddIds.add(saved.getId());
                 }
             }
 

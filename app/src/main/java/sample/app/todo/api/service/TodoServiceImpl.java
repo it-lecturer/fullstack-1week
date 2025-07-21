@@ -1,13 +1,17 @@
 package sample.app.todo.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import sample.app.common.exception.TodoNotFoundException;
+import sample.app.config.AppConfig;
 import sample.app.todo.api.dto.request.create.CreateTodoBody;
 import sample.app.todo.api.dto.request.delete.DeleteBulkTodoBody;
 import sample.app.todo.api.dto.request.update.UpdateTodoBody;
 import sample.app.todo.api.dto.response.TodoResponse;
 import sample.app.todo.domain.entity.Todo;
+import sample.app.todo.domain.repository.MemoryTodoRepository;
 import sample.app.todo.domain.repository.TodoRepository;
 
 import java.util.List;
@@ -27,6 +31,8 @@ public class TodoServiceImpl implements TodoService {
         System.out.println("todo = " + todo);
         System.out.println("request = " + request);
         Todo savedTodo = todoRepository.save(todo);
+
+        System.out.println("저장 후 savedTodo.id = " + savedTodo.getId()); // UUID 값
         return TodoResponse.from(savedTodo);
     }
 
@@ -64,7 +70,7 @@ public class TodoServiceImpl implements TodoService {
             existingTodo.setCompleted(request.getCompleted());
         }
 
-        todoRepository.update(todoId, existingTodo);
+        todoRepository.save(existingTodo);
     }
 
     @Override
