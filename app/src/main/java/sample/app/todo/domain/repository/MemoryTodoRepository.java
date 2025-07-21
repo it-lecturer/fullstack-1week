@@ -64,4 +64,14 @@ public class MemoryTodoRepository implements TodoRepository {
         ids.forEach(store::remove);
 
     }
+
+    // 테스트용 헬퍼 메서드
+    public void clear() {
+        store.clear();
+    }
+
+    public int size() {
+        return store.size();
+    }
+
 }
