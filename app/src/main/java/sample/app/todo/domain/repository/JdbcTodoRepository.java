@@ -23,7 +23,6 @@ import java.util.Collections;
 import sample.app.common.exception.TodoNotFoundException;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
 public class JdbcTodoRepository implements TodoRepository {
 

@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Repository
-// @Primary
 public class MemoryTodoRepository implements TodoRepository {
     private static Map<UUID, Todo> store = new HashMap<>();
 

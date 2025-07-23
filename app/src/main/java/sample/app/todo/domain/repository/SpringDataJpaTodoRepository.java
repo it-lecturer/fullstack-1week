@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-// @Primary
 public interface SpringDataJpaTodoRepository extends JpaRepository<Todo, UUID>, TodoRepository {
     
     @Override

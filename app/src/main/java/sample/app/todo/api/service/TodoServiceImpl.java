@@ -1,7 +1,9 @@
 package sample.app.todo.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sample.app.common.annotation.MainTodoRepository;
 import sample.app.common.exception.TodoNotFoundException;
 import sample.app.todo.api.dto.request.create.CreateTodoBody;
 import sample.app.todo.api.dto.request.delete.DeleteBulkTodoBody;
@@ -15,10 +17,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
+
+    @Autowired
+    public TodoServiceImpl(@MainTodoRepository TodoRepository todoRepository) {
+
+    }
 
     @Override
     public TodoResponse createTodo(CreateTodoBody request) {
