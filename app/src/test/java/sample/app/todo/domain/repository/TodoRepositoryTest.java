@@ -86,11 +86,16 @@ class TodoRepositoryTest {
     void checkRepositoryImplementation() {
         String repositoryType = repository.getClass().getSimpleName();
         System.out.println("🔍 현재 사용 중인 Repository: " + repositoryType);
+        System.out.println("🔍 Repository 클래스: " + repository.getClass().getName());
 
         if (repository instanceof MemoryTodoRepository) {
             System.out.println("📝 메모리 기반 Repository로 테스트 실행");
+        } else if (repository instanceof JdbcTodoRepository) {
+            System.out.println("💾 JDBC 기반 Repository로 테스트 실행");
+        } else if (repository instanceof SpringDataJpaTodoRepository) {
+            System.out.println("🌱 Spring Data JPA 기반 Repository로 테스트 실행");
         } else {
-            System.out.println("💾 데이터베이스 기반 Repository로 테스트 실행");
+            System.out.println("❓ 알 수 없는 Repository 타입: " + repositoryType);
         }
 
         // 테스트 통과를 위한 기본 검증
@@ -104,10 +109,16 @@ class TodoRepositoryTest {
         @Test
         @DisplayName("새로운 할일 저장 성공")
         void save_Success() {
+            // Given
+            System.out.println("🔍 사용 중인 Repository: " + repository.getClass().getSimpleName());
+            
             // When
             Todo saved = repository.save(testTodo1);
 
             // Then
+            System.out.println("💾 저장된 Todo ID: " + saved.getId());
+            System.out.println("💾 저장된 Todo 제목: " + saved.getTitle());
+            
             assertNotNull(saved);
             assertNotNull(saved.getId());
             assertEquals(testTodo1.getTitle(), saved.getTitle());

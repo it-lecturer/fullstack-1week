@@ -13,27 +13,30 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "todo")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@ToString
-
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@Data
 public class Todo {
     @Id
     @Column(name = "todo_id")
     private UUID id;
 
-    @Setter
     @Column(name = "title", length = 1000)
     private String title;
 
-    @Setter
     @Column(name = "completed")
     private boolean completed;
 
+    @Column(name = "created_at")
     private String createdAt = ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-    @Setter
+    @Column(name = "updated_at")
     private String updatedAt = ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        this.updatedAt = this.createdAt;
+    }
 
     @PreUpdate
     public void preUpdate() {
