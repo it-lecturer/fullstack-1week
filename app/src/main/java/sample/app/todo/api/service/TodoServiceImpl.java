@@ -17,14 +17,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
-
-    @Autowired
-    public TodoServiceImpl(@MainTodoRepository TodoRepository todoRepository) {
-
-    }
 
     @Override
     public TodoResponse createTodo(CreateTodoBody request) {
