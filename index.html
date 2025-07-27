@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <a href="https://www.naver.com" id="link">네이버로이동</a>
+    <script>
+      const $a = document.querySelector("#link");
+
+      $a.addEventListener("click", (e) => {
+        e.preventDefault(); // 기본 동작 방지
+        // console.log("링크 클릭됨");
+        // // 네이버로 이동하는 코드
+        // window.location.href = "https://www.naver.com";
+      });
+    </script>
+  </body>
+</html>

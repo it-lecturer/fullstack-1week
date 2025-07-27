@@ -21,16 +21,20 @@ const TodoApp = (props: TodoAppProps) => {
   const { status = "all" } = props;
   const [todos, setTodos] = React.useState<Array<ITodo>>([]);
 
-  const addTodo = React.useCallback((title: string) => {
-    setTodos((prev) => {
-      return [
-        ...prev,
-        new Todo({
-          title,
-        }),
-      ];
-    });
-  }, []);
+  const addTodo = React.useCallback(
+    (title: string) => {
+      setTodos([...todos, new Todo({ title })]);
+      // setTodos((prev) => {
+      //   return [
+      //     ...prev,
+      //     new Todo({
+      //       title,
+      //     }),
+      //   ];
+      // });
+    },
+    [todos]
+  );
 
   const handleSubmit = React.useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
